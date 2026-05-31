@@ -101,9 +101,19 @@ if (($_GET['action'] ?? '') === 'test_connection') {
         $row = $pdo->query('SELECT VERSION() AS v')->fetch(PDO::FETCH_ASSOC);
         echo json_encode(['ok' => true, 'version' => $row['v'] ?? '?']);
     } catch (PDOException $e) {
+        $errorCode = $e->errorInfo[1] ?? 0;
         $msg = $e->getMessage();
-        // Masquer le mot de passe s'il apparaît dans le message
-        $msg = preg_replace('/using password: \w+/', 'using password: ***', $msg);
+        // Traduction conviviale en français selon le code d'erreur MariaDB
+        if ($errorCode === 1045) {
+            $msg = "Identifiant ou mot de passe MariaDB incorrect (Accès refusé).";
+        } elseif ($errorCode === 1049) {
+            $msg = "La base de données spécifiée n'existe pas ou l'utilisateur n'y a pas accès.";
+        } elseif ($errorCode === 2002) {
+            $msg = "Hôte ou port MariaDB incorrect (Impossible de se connecter au serveur).";
+        } else {
+            // Masquer le mot de passe s'il apparaît dans le message brut
+            $msg = preg_replace('/using password: \w+/', 'using password: ***', $msg);
+        }
         echo json_encode(['ok' => false, 'error' => $msg]);
     }
     exit;
@@ -198,7 +208,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 3) {
         exit;
 
     } catch (PDOException $e) {
-        $log[] = ['err', 'Erreur MariaDB : ' . htmlspecialchars($e->getMessage())];
+        $errorCode = $e->errorInfo[1] ?? 0;
+        $msg = $e->getMessage();
+        // Traduction conviviale en français selon le code d'erreur MariaDB
+        if ($errorCode === 1045) {
+            $msg = "Identifiant ou mot de passe MariaDB incorrect (Accès refusé).";
+        } elseif ($errorCode === 1049) {
+            $msg = "La base de données spécifiée n'existe pas ou l'utilisateur n'y a pas accès.";
+        } elseif ($errorCode === 2002) {
+            $msg = "Hôte ou port MariaDB incorrect (Impossible de se connecter au serveur).";
+        } else {
+            // Masquer le mot de passe s'il apparaît dans le message brut
+            $msg = preg_replace('/using password: \w+/', 'using password: ***', $msg);
+        }
+        $log[] = ['err', 'Erreur MariaDB : ' . htmlspecialchars($msg)];
         $_SESSION['install_log_step3'] = $log;
         $_SESSION['install_step3_ok']  = false;
         // Rester sur step=3 avec les erreurs
