@@ -4151,26 +4151,31 @@ async function runGenerate() {
   spinner.style.display = 'flex';
   logEl.style.display = 'block';
   logEl.innerHTML = '<span style="color:var(--text3)">Démarrage…</span>\n';
+  consoleLog('Lancement de la génération du dataset...', 'info');
 
   // 1. Uploader les fichiers en attente
   const keys = ['stock', 'achats', 'ventes'];
   for (const key of keys) {
     if (_pendingFiles[key]) {
       logEl.innerHTML += `<span class="log-step">[UPLOAD] ${IMPORT_FILES[key].label}…</span>\n`;
+      consoleLog(`Upload du fichier ${IMPORT_FILES[key].label}...`, 'info');
       const ok = await uploadFile(key);
       if (!ok) {
         logEl.innerHTML += '<span class="log-err">[ERREUR] Upload échoué, annulation.</span>\n';
+        consoleLog(`Échec de l'upload du fichier ${IMPORT_FILES[key].label}. Génération annulée.`, 'error');
         btn.disabled = false;
         btn.textContent = '⚙️ Générer les JSON';
         spinner.style.display = 'none';
         return;
       }
       logEl.innerHTML += `<span class="log-ok">[OK] ${IMPORT_FILES[key].label} uploadé.</span>\n`;
+      consoleLog(`Fichier ${IMPORT_FILES[key].label} uploadé avec succès.`, 'success');
     }
   }
 
   // 2. Lancer la génération PHP (création du snapshot)
   logEl.innerHTML += '<span class="log-step">[PHP] Création du snapshot…</span>\n';
+  consoleLog('Création du snapshot côté serveur (génération des fichiers JSON et import BDD)...', 'info');
   try {
     const r = await fetch('upload.php?action=generate', { method: 'POST' });
     const text = await r.text();
@@ -4179,6 +4184,7 @@ async function runGenerate() {
       d = JSON.parse(text);
     } catch (parseError) {
       logEl.innerHTML += `<span class="log-err">[ERREUR RÉSEAU] La réponse du serveur n'est pas un JSON valide.<br>Détail : ${escHtml(parseError.message)}<br>Réponse brute reçue :<br><pre style="white-space:pre-wrap;background:rgba(255,0,0,0.1);padding:10px;border-radius:4px;margin-top:5px;font-family:monospace">${escHtml(text)}</pre></span>`;
+      consoleLog(`Erreur parsing réponse JSON du serveur : ${parseError.message}`, 'error');
       btn.disabled = false;
       btn.textContent = '⚙️ Générer les JSON';
       spinner.style.display = 'none';
@@ -4197,6 +4203,7 @@ async function runGenerate() {
       });
       logEl.innerHTML += lines.join('\n');
       logEl.innerHTML += `\n<span class="log-ok" style="font-weight:700">✅ Terminé le ${d.generated_at} — Actualisation des données…</span>`;
+      consoleLog(`Snapshot « ${d.label || d.dataset} » créé avec succès le ${d.generated_at}`, 'success');
 
       // 3. Mettre à jour le chip + l'historique, recharger les données
       document.getElementById('datasetChipLabel').textContent = d.label || d.dataset;
@@ -4219,9 +4226,11 @@ async function runGenerate() {
       }, 800);
     } else {
       logEl.innerHTML += `<span class="log-err">[ERREUR] ${escHtml(d.error)}\n${escHtml(d.log||'')}</span>`;
+      consoleLog(`Erreur génération serveur : ${d.error}`, 'error');
     }
   } catch(e) {
     logEl.innerHTML += `<span class="log-err">[ERREUR RÉSEAU] ${e.message}</span>`;
+    consoleLog(`Erreur réseau lors de la génération : ${e.message}`, 'error');
   }
 
   btn.disabled = false;
