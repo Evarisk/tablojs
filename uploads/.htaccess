@@ -1,0 +1,31 @@
+# uploads/.htaccess — Dossier logos uniquement
+# Approche whitelist : seuls les types images connus sont servis
+# Toute tentative d'exécution PHP est désactivée au niveau Apache
+
+# Désactiver l'exécution PHP dans ce dossier (même si un .php était uploadé)
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php8.c>
+    php_flag engine off
+</IfModule>
+
+# Désactiver les handlers CGI/PHP au niveau Apache
+<FilesMatch ".+">
+    SetHandler none
+    RemoveHandler .php .php3 .php4 .php5 .php7 .php8 .phtml .phar .shtml .cgi .pl .py
+</FilesMatch>
+
+# Whitelist stricte : seuls les fichiers image sont servis
+<FilesMatch "^logo\.(jpg|jpeg|png|gif|webp|svg)$">
+    Allow from all
+</FilesMatch>
+
+# Bloquer tout le reste (y compris index.php, .htaccess visible, etc.)
+<FilesMatch "^(?!logo\.(jpg|jpeg|png|gif|webp|svg)$).*">
+    Order deny,allow
+    Deny from all
+</FilesMatch>
+
+# Pas de listing du dossier
+Options -Indexes

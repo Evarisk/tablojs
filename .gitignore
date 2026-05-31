@@ -1,0 +1,30 @@
+# Dossiers temporaires et scripts de test
+scratch/
+
+# Configuration locale à ne pas committer
+conf/conf.php
+
+# Journaux d'authentification
+logs/auth.log
+
+# Ignorer les datasets et les fichiers du dossier data
+data/*
+!data/Upload/
+!data/.htaccess
+!data/active.txt
+
+# Ignorer tout dans Upload sauf index.php
+data/Upload/*
+!data/Upload/index.php
+
+# Verrouillage d'installation
+install/install.lock
+
+# Dossiers d'uploads d'images (logos, etc.)
+uploads/*
+!uploads/.htaccess
+!uploads/index.php
+
+# Ignorer d'autres fichiers temporaires ou de log
+logs/*.log
+*.log

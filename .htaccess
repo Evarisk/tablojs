@@ -1,0 +1,48 @@
+﻿# tablojs — Règles de sécurité Apache
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Bloquer l'indexation par les moteurs de recherche
+<IfModule mod_headers.c>
+    Header always set X-Robots-Tag "noindex, nofollow, noarchive, nosnippet"
+</IfModule>
+
+# Désactiver le listing des répertoires
+Options -Indexes
+
+# Priorité des fichiers index : index.html AVANT index.php
+# (évite que le index.php "silence is golden" masque le vrai dashboard)
+DirectoryIndex index.html index.php
+
+# Bloquer l'accès direct aux fichiers JSON (passer par api/data.php)
+<FilesMatch "\.json$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Protéger le dossier config/
+<FilesMatch "^auth\.php$">
+    Order allow,deny
+    Allow from all
+</FilesMatch>
+
+# Bloquer l'accès direct au dossier config/
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Bloquer accès direct à config/
+    RewriteRule ^config/ - [F,L]
+
+    # Bloquer accès direct aux fichiers .htpasswd et fichiers sensibles
+    RewriteRule \.(htpasswd|env|log|bak|sql|sh)$ - [F,L]
+</IfModule>
+
+# Désactiver la signature du serveur
+ServerSignature Off
+
+# Protection XSS et clickjacking (headers HTTP)
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>

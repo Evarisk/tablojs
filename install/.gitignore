@@ -1,0 +1,6 @@
+# Exemple de conf.php à copier
+# Ne JAMAIS commiter conf.php
+conf.php
+
+# Fichier de verrouillage créé après installation
+install.lock

@@ -1,0 +1,11 @@
+Options -Indexes
+# Autoriser uniquement index.php en accès web direct
+# Les fichiers SQL et PHP autres sont protégés
+<FilesMatch "^(?!index\.php$).*\.php$">
+  Order Deny,Allow
+  Deny from all
+</FilesMatch>
+<FilesMatch "\.sql$">
+  Order Deny,Allow
+  Deny from all
+</FilesMatch>

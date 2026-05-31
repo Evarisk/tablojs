@@ -1,0 +1,12 @@
+{
+    "company_name": "tablojs",
+    "company_tagline": "Gestion des stocks",
+    "company_logo": "",
+    "allowed_ips": [],
+    "trusted_proxies": [],
+    "max_attempts": 3,
+    "lockout_duration": 300,
+    "session_duration": 28800,
+    "captcha_enabled": true,
+    "log_enabled": true
+}

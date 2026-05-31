@@ -1,0 +1,141 @@
+/* ── Import page ──────────────────────────── */
+.drop-zone {
+  border: 2px dashed var(--border2);
+  border-radius: var(--radius2);
+  padding: 24px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .2s;
+  margin: 12px 0 8px;
+  background: var(--bg);
+}
+.drop-zone:hover, .drop-zone.over {
+  border-color: var(--primary);
+  background: var(--primary-g);
+}
+.drop-zone.ready {
+  border-color: var(--green);
+  background: var(--green-bg);
+}
+.drop-zone.uploading {
+  border-color: var(--orange);
+  background: var(--orange-bg);
+  pointer-events: none;
+}
+.drop-icon { font-size: 28px; margin-bottom: 8px; }
+.drop-label { font-size: 12.5px; color: var(--text3); line-height: 1.5; }
+.drop-label small { font-size: 11px; }
+
+.file-info {
+  font-size: 11px; color: var(--text3);
+  min-height: 16px; text-align: center;
+  margin-top: 4px;
+}
+.file-info.ok  { color: var(--green); }
+.file-info.err { color: var(--red); }
+
+.file-status-badge {
+  display: inline-flex; align-items: center;
+  padding: 3px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 600;
+  white-space: nowrap; flex-shrink: 0;
+}
+.file-status-badge.present  { background: var(--green-bg);  color: var(--green); }
+.file-status-badge.missing  { background: var(--red-bg);    color: var(--red); }
+.file-status-badge.uploaded { background: var(--primary-g); color: var(--primary); }
+
+.col-desc {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  margin-bottom: 4px;
+}
+.col-desc-title {
+  font-size: 10px; font-weight: 600;
+  color: var(--text3); text-transform: uppercase;
+  letter-spacing: .5px; margin-bottom: 8px;
+}
+.col-row {
+  display: flex; align-items: baseline; gap: 8px;
+  padding: 4px 0; border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.col-row:last-child { border-bottom: none; }
+.col-name {
+  font-family: monospace; font-size: 12px;
+  color: var(--primary); font-weight: 600;
+  min-width: 100px; flex-shrink: 0;
+}
+.col-type {
+  background: var(--surface2); color: var(--text3);
+  font-size: 10px; padding: 1px 6px;
+  border-radius: 4px; flex-shrink: 0;
+}
+.col-info { color: var(--text2); font-size: 11.5px; }
+
+.sql-block {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 12px 14px;
+  font-family: monospace; font-size: 11.5px;
+  color: var(--text2); line-height: 1.7;
+  overflow-x: auto; margin: 0;
+  white-space: pre;
+}
+
+/* log console success/error lines */
+.log-ok  { color: var(--green); }
+.log-err { color: var(--red); }
+.log-step { color: var(--primary); font-weight: 600; }
+
+/* ── Dataset chip (topbar) ──────────────────── */
+.dataset-chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 5px 12px; border-radius: 20px;
+  background: var(--surface2); border: 1px solid var(--border2);
+  font-size: 12px; font-weight: 600; color: var(--text2);
+  cursor: pointer; transition: all .2s;
+  max-width: 220px; overflow: hidden; white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.dataset-chip:hover {
+  border-color: var(--primary);
+  background: var(--primary-g);
+  color: var(--primary);
+}
+.dataset-chip-icon { font-size: 14px; flex-shrink: 0; }
+
+/* ── Dataset history table ──────────────────── */
+.dataset-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto auto auto;
+  align-items: center; gap: 10px;
+  padding: 10px 14px; border-radius: var(--radius);
+  transition: background .15s;
+  border-bottom: 1px solid var(--border);
+}
+.dataset-row:last-child { border-bottom: none; }
+.dataset-row:hover { background: var(--surface2); }
+.dataset-row.active-row { background: var(--primary-g); border-color: transparent; }
+
+.ds-badge {
+  width: 8px; height: 8px; border-radius: 50%;
+  flex-shrink: 0; margin-top: 2px;
+  background: var(--border2);
+}
+.ds-badge.active { background: var(--green); box-shadow: 0 0 0 3px var(--green-bg); }
+
+.ds-label { font-size: 13px; font-weight: 600; color: var(--text1); }
+.ds-label input {
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 4px; padding: 3px 8px; color: var(--text1);
+  font-size: 13px; font-weight: 600; width: 100%;
+}
+.ds-meta { font-size: 11px; color: var(--text3); margin-top: 1px; }
+
+.ds-stat {
+  font-size: 11px; color: var(--text3); text-align: right;
+  white-space: nowrap;
+}
+.ds-actions { display: flex; gap: 6px; flex-shrink: 0; }
+

@@ -1,0 +1,60 @@
+<?php
+// ============================================================================
+// tablojs — Fichier de configuration (EXEMPLE)
+// ============================================================================
+//
+// NE PAS MODIFIER CE FICHIER.
+// Copiez-le en conf/conf.php et remplissez vos valeurs réelles.
+//
+//   cp conf/conf.php.example conf/conf.php
+//
+// conf/conf.php est dans .gitignore et ne sera jamais commité.
+// ============================================================================
+
+
+// ── Base de données MariaDB ──────────────────────────────────────────────────
+
+// Hôte du serveur MariaDB
+// Exemples : 'localhost', '127.0.0.1', 'db.monserveur.com'
+$tablojs_db_host = 'localhost';
+
+// Port MariaDB (défaut : 3306)
+$tablojs_db_port = '3306';
+
+// Nom de la base de données
+// Exemple : 'tablojs'
+$tablojs_db_name = 'tablojs';
+
+// Utilisateur MariaDB dédié (droits limités : SELECT, INSERT, UPDATE, DELETE)
+// NE PAS utiliser root en production
+$tablojs_db_user = 'tablojs_user';
+
+// Mot de passe de l'utilisateur MariaDB
+// CHANGER CE MOT DE PASSE avant la mise en production
+$tablojs_db_pass = 'CHANGER_CE_MOT_DE_PASSE';
+
+// Charset de connexion (ne pas modifier sauf raison particulière)
+$tablojs_db_charset = 'utf8mb4';
+
+
+// ── Sécurité ─────────────────────────────────────────────────────────────────
+
+// Clé de chiffrement des fichiers uploadés (Excel stock/achats/ventes)
+// Doit faire au moins 32 caractères aléatoires.
+// Générer avec : php -r "echo bin2hex(random_bytes(32));"
+// CONSERVER CETTE CLÉ : sans elle, les fichiers chiffrés sont irrécupérables.
+$tablojs_upload_encrypt_key = 'CHANGER_CETTE_CLE_32_CHARS_MIN';
+
+// Mode production : 1 = masquer les erreurs PHP aux visiteurs, 0 = debug
+$tablojs_prod_mode = 1;
+
+
+// ── Application ──────────────────────────────────────────────────────────────
+
+// URL racine de l'application (sans slash final)
+// Exemple : 'http://localhost/tablojs'
+$tablojs_url_root = 'http://localhost/tablojs';
+
+// Identifiant unique de cette installation (salt pour CSRF, sessions, etc.)
+// Générer avec : php -r "echo bin2hex(random_bytes(16));"
+$tablojs_instance_id = 'GENERER_UN_ID_UNIQUE_ICI';

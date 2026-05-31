@@ -1,0 +1,15 @@
+# README
+########
+
+This directory contains:
+
+data:      A directory with SQL scripts to populate tablojs initial data
+           (settings defaults, dictionaries, reference data).
+
+migration: A directory with SQL scripts to migrate tablojs database from
+           one version to another version.
+           File naming convention: upgrade_X.Y.Z-X.Y+1.Z.sql
+
+tables:    A directory with all files with CREATE TABLE and index orders.
+           One file per table: tablojs_<tablename>.sql
+           One file per table for indexes: tablojs_<tablename>.key.sql

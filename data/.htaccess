@@ -1,0 +1,5 @@
+# data/.htaccess — Bloquer tout accès HTTP direct aux fichiers de données
+# Les JSON et XLSX sont servis exclusivement par api/data.php (authentifié)
+# Pas de bypass possible : Deny from all s'applique à tous les sous-dossiers
+Order deny,allow
+Deny from all
