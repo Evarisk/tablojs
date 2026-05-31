@@ -341,7 +341,7 @@ function importDatasetToDb(PDO $pdo, string $datasetDir, string $slug, bool $isA
 
         $pdo->commit();
         return true;
-    } catch (Exception $e) {
+    } catch (Throwable $e) {
         $pdo->rollBack();
         error_log('[tablojs] importDatasetToDb failed: ' . $e->getMessage());
         return false;
@@ -444,7 +444,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_GET['action'] ?? '') === 'genera
         require_once __DIR__ . '/generate_data.php';
         $result = generateData($datasetDir, $datasetDir);
         $output = ob_get_clean();
-    } catch (Exception $e) {
+    } catch (Throwable $e) {
         $output = ob_get_clean();
         rmdirAll($datasetDir); // rollback
         jsonErr('Erreur génération : ' . $e->getMessage() . "\n" . $output, 500);

@@ -4173,7 +4173,17 @@ async function runGenerate() {
   logEl.innerHTML += '<span class="log-step">[PHP] Création du snapshot…</span>\n';
   try {
     const r = await fetch('upload.php?action=generate', { method: 'POST' });
-    const d = await r.json();
+    const text = await r.text();
+    let d;
+    try {
+      d = JSON.parse(text);
+    } catch (parseError) {
+      logEl.innerHTML += `<span class="log-err">[ERREUR RÉSEAU] La réponse du serveur n'est pas un JSON valide.<br>Détail : ${escHtml(parseError.message)}<br>Réponse brute reçue :<br><pre style="white-space:pre-wrap;background:rgba(255,0,0,0.1);padding:10px;border-radius:4px;margin-top:5px;font-family:monospace">${escHtml(text)}</pre></span>`;
+      btn.disabled = false;
+      btn.textContent = '⚙️ Générer les JSON';
+      spinner.style.display = 'none';
+      return;
+    }
 
     if (d.ok) {
       // Coloriser le log Python ligne par ligne
