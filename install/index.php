@@ -73,37 +73,35 @@ session_start();
 
 // ── Protection : déjà installé ? ────────────────────────────────────────────
 if (file_exists(LOCK_FILE) && ($_GET['step'] ?? '') !== 'done') {
-    if (($_GET['force'] ?? '') !== '1') {
-        // Vérifier si l'installation est réellement complète (tables présentes)
+    // Vérifier si l'installation est réellement complète (tables présentes)
+    $installOk = false;
+    try {
+        if (file_exists(CONF_FILE)) {
+            require_once CONF_FILE;
+            $chkDsn = "mysql:host={$tablojs_db_host};port={$tablojs_db_port};dbname={$tablojs_db_name};charset=utf8mb4";
+            $chkPdo = new PDO($chkDsn, $tablojs_db_user, $tablojs_db_pass, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+            $tableCount = $chkPdo->query("SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE()")->fetchColumn();
+            $installOk = ($tableCount >= 6);
+        }
+    } catch (Exception $e) {
         $installOk = false;
-        try {
-            if (file_exists(CONF_FILE)) {
-                require_once CONF_FILE;
-                $chkDsn = "mysql:host={$tablojs_db_host};port={$tablojs_db_port};dbname={$tablojs_db_name};charset=utf8mb4";
-                $chkPdo = new PDO($chkDsn, $tablojs_db_user, $tablojs_db_pass, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-                $tableCount = $chkPdo->query("SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE()")->fetchColumn();
-                $installOk = ($tableCount >= 6);
-            }
-        } catch (Exception $e) {
-            $installOk = false;
-        }
+    }
 
-        if ($installOk) {
-            // Redirection relative vers la page de connexion
-            header('Location: ../login.php');
-            exit;
-        }
-
-        // Installation incomplète : supprimer le lock et reprendre
-        @unlink(LOCK_FILE);
-        // Vider la session pour repartir proprement
-        session_destroy();
-        session_name('tablojs_install');
-        session_start();
-        $_SESSION['install_error'] = 'Installation précédente incomplète : la base de données n\'a pas été créée correctement. Veuillez recommencer la configuration.';
-        header('Location: ?step=2');
+    if ($installOk) {
+        // Redirection relative vers la page de connexion
+        header('Location: ../login.php');
         exit;
     }
+
+    // Installation incomplète : supprimer le lock et reprendre la configuration
+    @unlink(LOCK_FILE);
+    // Vider la session pour repartir proprement
+    session_destroy();
+    session_name('tablojs_install');
+    session_start();
+    $_SESSION['install_error'] = 'Installation précédente incomplète : la base de données n\'a pas été créée correctement. Veuillez recommencer la configuration.';
+    header('Location: ?step=2');
+    exit;
 }
 
 $step    = (int)($_GET['step'] ?? 1);
