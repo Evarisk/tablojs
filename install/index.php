@@ -101,7 +101,7 @@ if (($_GET['action'] ?? '') === 'test_connection') {
         $row = $pdo->query('SELECT VERSION() AS v')->fetch(PDO::FETCH_ASSOC);
         echo json_encode(['ok' => true, 'version' => $row['v'] ?? '?']);
     } catch (PDOException $e) {
-        $errorCode = $e->errorInfo[1] ?? 0;
+        $errorCode = isset($e->errorInfo[1]) ? $e->errorInfo[1] : 0;
         $msg = $e->getMessage();
         // Traduction conviviale en français selon le code d'erreur MariaDB
         if ($errorCode === 1045) {
@@ -225,6 +225,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 3) {
     try {
         // Connexion root
         $rootDsn = "mysql:host={$db['host']};port={$db['port']};charset=utf8mb4";
+        if (!empty($db['dbname'])) {
+            $rootDsn .= ";dbname={$db['dbname']}";
+        }
         $rootPdo = new PDO($rootDsn, $db['root'], $db['rootpass'], [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         ]);
@@ -295,7 +298,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 3) {
         exit;
 
     } catch (PDOException $e) {
-        $errorCode = $e->errorInfo[1] ?? 0;
+        $errorCode = isset($e->errorInfo[1]) ? $e->errorInfo[1] : 0;
         $msg = $e->getMessage();
         // Traduction conviviale en français selon le code d'erreur MariaDB
         if ($errorCode === 1045) {
