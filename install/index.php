@@ -119,6 +119,88 @@ if (($_GET['action'] ?? '') === 'test_connection') {
     exit;
 }
 
+// ── Endpoint AJAX : scanner les installations tabloJS existantes ───────────
+if (($_GET['action'] ?? '') === 'detect_installs') {
+    header('Content-Type: application/json');
+    $host     = trim($_POST['db_host']     ?? 'localhost');
+    $port     = trim($_POST['db_port']     ?? '3306');
+    $root     = trim($_POST['db_root']     ?? 'root');
+    $rootpass = $_POST['db_rootpass']      ?? '';
+    $dbname   = trim($_POST['db_name']      ?? '');
+
+    try {
+        $dsn = "mysql:host={$host};port={$port};charset=utf8mb4";
+        if ($dbname !== '') {
+            $dsn .= ";dbname={$dbname}";
+        }
+        $pdo = new PDO($dsn, $root, $rootpass, [
+            PDO::ATTR_ERRMODE    => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_TIMEOUT    => 5,
+        ]);
+
+        $instances = [];
+        $totalBds  = 0;
+
+        // Lister les bases de données accessibles
+        $dbList = [];
+        if ($dbname !== '') {
+            $dbList[] = $dbname;
+        } else {
+            $stmt = $pdo->query('SHOW DATABASES');
+            while ($db = $stmt->fetchColumn()) {
+                if (in_array(strtolower($db), ['information_schema', 'mysql', 'performance_schema', 'sys'])) {
+                    continue;
+                }
+                $dbList[] = $db;
+            }
+        }
+
+        $totalBds = count($dbList);
+
+        // Pour chaque base, vérifier si c'est une instance tabloJS
+        foreach ($dbList as $db) {
+            try {
+                $pdo->exec("USE `" . str_replace("`", "``", $db) . "`");
+                $tableCheck = $pdo->query("SHOW TABLES LIKE 'tablojs_settings'")->fetchColumn();
+                if ($tableCheck) {
+                    $tableCount = $pdo->query("SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA = '$db'")->fetchColumn();
+                    $company = '';
+                    $tagline = '';
+                    try {
+                        $sStmt = $pdo->query("SELECT setting_key, value FROM tablojs_settings WHERE setting_key IN ('company_name', 'company_tagline')");
+                        while ($row = $sStmt->fetch(PDO::FETCH_ASSOC)) {
+                            if ($row['setting_key'] === 'company_name') $company = $row['value'];
+                            if ($row['setting_key'] === 'company_tagline') $tagline = $row['value'];
+                        }
+                    } catch (Exception $eSettings) {
+                        // Pas critique, ignorer
+                    }
+
+                    $users = [$root];
+                    $instances[] = [
+                        'dbname'  => $db,
+                        'tables'  => $tableCount,
+                        'company' => $company,
+                        'tagline' => $tagline,
+                        'users'   => $users,
+                    ];
+                }
+            } catch (Exception $eDb) {
+                // Ignorer les bases inaccessibles
+            }
+        }
+
+        echo json_encode([
+            'ok'        => true,
+            'instances' => $instances,
+            'total'     => $totalBds,
+        ]);
+    } catch (PDOException $e) {
+        echo json_encode(['ok' => false, 'error' => $e->getMessage()]);
+    }
+    exit;
+}
+
 // ── Étape 2 → 3 : Enregistrer les paramètres BDD en session ─────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 2) {
     $_SESSION['install_db'] = [
