@@ -87,9 +87,13 @@ if (($_GET['action'] ?? '') === 'test_connection') {
     $port     = trim($_POST['db_port']     ?? '3306');
     $root     = trim($_POST['db_root']     ?? 'root');
     $rootpass = $_POST['db_rootpass']      ?? '';
+    $dbname   = trim($_POST['db_name']      ?? '');
 
     try {
         $dsn = "mysql:host={$host};port={$port};charset=utf8mb4";
+        if ($dbname !== '') {
+            $dsn .= ";dbname={$dbname}";
+        }
         $pdo = new PDO($dsn, $root, $rootpass, [
             PDO::ATTR_ERRMODE    => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_TIMEOUT    => 5,
@@ -856,6 +860,12 @@ if ($step > 3 && $step3Ok !== true) { header('Location: ?step=3'); exit; }
       </div>
     </div>
 
+    <div class="field">
+      <label>Nom de la base de données (Optionnel / Requis si l'utilisateur n'a accès qu'à une base spécifique)</label>
+      <input type="text" id="dbTestName" value="<?= htmlspecialchars($existingConf['dbname'] ?? '') ?>" placeholder="Laisser vide ou saisir le nom de la base (ex: sc3mala2249_tablojs)" oninput="resetTest()">
+      <p class="hint">Indiquez le nom de la base si vous vous connectez à une base de données existante (ex. hébergement o2switch).</p>
+    </div>
+
     <!-- Champs host/port soumis via hidden, affichés en interactif -->
     <input type="hidden" name="db_host" id="dbHostHidden" value="<?= htmlspecialchars($existingConf['host'] ?? 'localhost') ?>">
     <input type="hidden" name="db_port" id="dbPortHidden" value="<?= htmlspecialchars($existingConf['port'] ?? '3306') ?>">
@@ -902,16 +912,16 @@ if ($step > 3 && $step3Ok !== true) { header('Location: ?step=3'); exit; }
 
       <div class="field">
         <label>Nom de la base de donn&eacute;es</label>
-        <input type="text" name="db_name" value="<?= htmlspecialchars($existingConf['dbname'] ?? 'tablojs') ?>" placeholder="tablojs" required>
+        <input type="text" name="db_name" id="dbName" value="<?= htmlspecialchars($existingConf['dbname'] ?? 'tablojs') ?>" placeholder="tablojs" required>
       </div>
       <div class="field-row">
         <div class="field">
           <label>Utilisateur d&eacute;di&eacute;</label>
-          <input type="text" name="db_user" value="<?= htmlspecialchars($existingConf['user'] ?? 'tablojs_user') ?>" placeholder="tablojs_user" required>
+          <input type="text" name="db_user" id="dbUser" value="<?= htmlspecialchars($existingConf['user'] ?? 'tablojs_user') ?>" placeholder="tablojs_user" required>
         </div>
         <div class="field">
           <label>Mot de passe utilisateur</label>
-          <input type="password" name="db_pass" value="<?= htmlspecialchars($existingConf['pass'] ?? '') ?>" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" autocomplete="new-password">
+          <input type="password" name="db_pass" id="dbPass" value="<?= htmlspecialchars($existingConf['pass'] ?? '') ?>" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" autocomplete="new-password">
           <p class="hint">Laissez vide si pas de mot de passe</p>
         </div>
       </div>
@@ -952,6 +962,7 @@ if ($step > 3 && $step3Ok !== true) { header('Location: ?step=3'); exit; }
     body.append('db_port',     document.getElementById('dbPort').value);
     body.append('db_root',     document.getElementById('dbRoot').value);
     body.append('db_rootpass', document.getElementById('dbRootpass').value);
+    body.append('db_name',     document.getElementById('dbTestName').value);
     try {
       const r    = await fetch('?action=test_connection', { method: 'POST', body });
       const json = await r.json();
@@ -961,6 +972,26 @@ if ($step > 3 && $step3Ok !== true) { header('Location: ?step=3'); exit; }
         btn.textContent = '✅ Connecté';
         btn.className = 'btn btn-success';
         res.innerHTML = '<span style="color:#86efac">✓ MariaDB ' + json.version + ' &mdash; Connexion réussie !</span>';
+        
+        // Copier le nom de la base de test vers la base cible
+        const testDb = document.getElementById('dbTestName').value;
+        if (testDb) {
+          const dbNameField = document.getElementById('dbName');
+          if (dbNameField) dbNameField.value = testDb;
+        }
+        
+        // Copier l'utilisateur et mot de passe s'ils ne sont pas root
+        const rootUser = document.getElementById('dbRoot').value;
+        if (rootUser !== 'root') {
+          const dbUserField = document.getElementById('dbUser');
+          const dbPassField = document.getElementById('dbPass');
+          if (dbUserField) dbUserField.value = rootUser;
+          if (dbPassField) dbPassField.value = document.getElementById('dbRootpass').value;
+          // Décocher la création automatique de l'utilisateur dédié
+          const createUserCheckbox = document.querySelector('[name="create_user"]');
+          if (createUserCheckbox) createUserCheckbox.checked = false;
+        }
+
         const s2 = document.getElementById('section2');
         s2.style.display = 'block';
         s2.style.animation = 'fadeUp .35s ease';
