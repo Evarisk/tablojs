@@ -231,8 +231,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 3) {
         $log[] = ['ok', "Connexion administrateur MariaDB réussie ({$db['root']}@{$db['host']})"];
 
         // Créer la base (IF NOT EXISTS = safe si elle existe déjà)
-        $rootPdo->exec("CREATE DATABASE IF NOT EXISTS `{$db['dbname']}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-        $log[] = ['ok', "Base de données <strong>{$db['dbname']}</strong> créée / vérifiée"];
+        try {
+            $rootPdo->exec("CREATE DATABASE IF NOT EXISTS `{$db['dbname']}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+            $log[] = ['ok', "Base de données <strong>{$db['dbname']}</strong> créée / vérifiée"];
+        } catch (PDOException $eDbCreate) {
+            // Tolérant en cas de base existante sur hébergement mutualisé
+            $log[] = ['warn', "Note : impossible d'exécuter la création de base de données — " . htmlspecialchars($eDbCreate->getMessage())];
+        }
 
         // Sélectionner la base (root crée toujours les tables)
         $rootPdo->exec("USE `{$db['dbname']}`");
