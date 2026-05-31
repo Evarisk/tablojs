@@ -1,4 +1,8 @@
 <?php
+// Activer l'affichage des erreurs pour le débogage de l'installation
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 /**
  * tablojs — Wizard d'installation v1.0
  * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
