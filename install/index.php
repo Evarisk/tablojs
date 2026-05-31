@@ -1052,57 +1052,7 @@ if ($step > 3 && $step3Ok !== true) { header('Location: ?step=3'); exit; }
   .instance-meta { font-size:11px; color:var(--text2); margin-top:2px; }
   .instance-badge { font-size:10px; background:rgba(79,128,255,.15); color:var(--primary); border-radius:20px; padding:2px 8px; white-space:nowrap; }
   .instance-user  { font-size:10px; background:rgba(34,197,94,.12); color:#86efac; border-radius:20px; padding:2px 8px; font-family:monospace; white-space:nowrap; }
-  </style>🔌 Tester la connexion';
-    btn.className = 'btn btn-secondary';
-    btn.disabled  = false;
-    document.getElementById('section2').style.display = 'none';
-  }
-  async function testConnection() {
-    const btn = document.getElementById('btnTest');
-    const res = document.getElementById('testResult');
-    btn.disabled = true;
-    btn.textContent = '↻ Test en cours…';
-    res.innerHTML = '';
-    const body = new FormData();
-    body.append('db_host',     document.getElementById('dbHost').value);
-    body.append('db_port',     document.getElementById('dbPort').value);
-    body.append('db_root',     document.getElementById('dbRoot').value);
-    body.append('db_rootpass', document.getElementById('dbRootpass').value);
-    try {
-      const r    = await fetch('?action=test_connection', { method: 'POST', body });
-      const json = await r.json();
-      btn.disabled = false;
-      if (json.ok) {
-        testPassed    = true;
-        btn.textContent = '✅ Connecté';
-        btn.className = 'btn btn-success';
-        res.innerHTML = '<span style="color:#86efac">✓ MariaDB ' + json.version + ' — Connexion réussie !</span>';
-        const s2 = document.getElementById('section2');
-        s2.style.display   = 'block';
-        s2.style.animation = 'fadeUp .35s ease';
-        s2.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      } else {
-        testPassed    = false;
-        btn.textContent = '❌ Erreur — Relancer';
-        btn.className = 'btn btn-secondary';
-        res.innerHTML = '<span style="color:#fca5a5">✗ ' + json.error + '</span>';
-      }
-    } catch(e) {
-      btn.disabled  = false;
-      btn.textContent = '❌ Erreur réseau';
-      btn.className = 'btn btn-secondary';
-      res.innerHTML = '<span style="color:#fca5a5">Erreur : ' + e.message + '</span>';
-    }
-  }
-  document.getElementById('dbForm').addEventListener('submit', function(e) {
-    if (!testPassed) {
-      e.preventDefault();
-      document.getElementById('testResult').innerHTML =
-        '<span style="color:#fca5a5">⚠ Testez d\'abord la connexion administrateur.</span>';
-    }
-  });
-  </script>
-  <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+  </style>
 
 
 
