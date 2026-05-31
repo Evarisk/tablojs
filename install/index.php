@@ -41,7 +41,8 @@ if (file_exists(LOCK_FILE) && ($_GET['step'] ?? '') !== 'done') {
         }
 
         if ($installOk) {
-            header('Location: /tablojs/login.php');
+            // Redirection relative vers la page de connexion
+            header('Location: ../login.php');
             exit;
         }
 
@@ -1460,7 +1461,7 @@ if ($step > 3 && $step3Ok !== true) { header('Location: ?step=3'); exit; }
   </div>
 
   <div class="btn-row" style="justify-content:center;">
-    <a href="/tablojs/login.php" class="btn btn-success" id="loginBtn" style="font-size:16px;padding:14px 32px;">
+    <a href="../login.php" class="btn btn-success" id="loginBtn" style="font-size:16px;padding:14px 32px;">
       🚀 Accéder à l'application →
     </a>
   </div>
@@ -1477,7 +1478,8 @@ if ($step > 3 && $step3Ok !== true) { header('Location: ?step=3'); exit; }
     bar.style.width = pct + '%';
     if (elapsed >= total) {
       clearInterval(timer);
-      window.location.href = '/tablojs/login.php';
+      // Redirection automatique vers la page de connexion
+      window.location.href = '../login.php';
     }
   }, 50);
   </script>

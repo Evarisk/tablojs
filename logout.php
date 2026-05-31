@@ -15,6 +15,6 @@ if (ini_get('session.use_cookies')) {
         $p['path'], $p['domain'], $p['secure'], $p['httponly']);
 }
 session_destroy();
-
-header('Location: /tablojs/login.php');
+// Redirection relative vers la page de connexion
+header('Location: login.php');
 exit;

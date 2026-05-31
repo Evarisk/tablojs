@@ -28,7 +28,8 @@
     }
 
     if (!$installOk) {
-        header('Location: /tablojs/install/');
+        // Redirection relative vers le dossier d'installation
+        header('Location: install/');
         exit;
     }
 })();
@@ -69,7 +70,8 @@ if (!checkIpAllowed()) {
 // Déjà connecté → rediriger
 if (!empty($_SESSION['auth_user']) && !empty($_SESSION['auth_time'])
     && time() - $_SESSION['auth_time'] < ($settings['session_duration'] ?? SESSION_DURATION)) {
-    header('Location: /tablojs/');
+    // Redirection relative vers la racine
+    header('Location: ./');
     exit;
 }
 
@@ -159,7 +161,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         unset($_SESSION['login_lock_until'], $_SESSION['captcha_answer'], $_SESSION['captcha_question']);
 
         logAuth('login_success', ['user' => $user]);
-        header('Location: /tablojs/');
+        // Redirection relative vers la racine après succès
+        header('Location: ./');
         exit;
     }
 }

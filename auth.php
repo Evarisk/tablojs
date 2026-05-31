@@ -198,7 +198,16 @@ function requireAuth(bool $jsonMode = false): void {
             exit;
         }
         $redirect = urlencode($_SERVER['REQUEST_URI'] ?? '');
-        header('Location: /tablojs/login.php?next=' . $redirect);
+        // Déterminer le chemin relatif vers la racine
+        $relativeRoot = '';
+        $appDir = realpath(__DIR__);
+        $scriptDir = realpath(dirname($_SERVER['SCRIPT_FILENAME']));
+        if ($appDir !== false && $scriptDir !== false && str_starts_with($scriptDir, $appDir)) {
+            $diff = substr($scriptDir, strlen($appDir));
+            $levels = substr_count($diff, DIRECTORY_SEPARATOR);
+            $relativeRoot = str_repeat('../', $levels);
+        }
+        header('Location: ' . $relativeRoot . 'login.php?next=' . $redirect);
         exit;
     }
 }
