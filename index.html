@@ -713,6 +713,11 @@
               <input type="checkbox" id="captchaEnabled" checked
                      style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer">
             </div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:13px">Affichage des erreurs de débogage (display_errors)</span>
+              <input type="checkbox" id="debugMode" checked
+                     style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer">
+            </div>
           </div>
         </div>
       </div>
@@ -1984,10 +1989,12 @@ async function loadSecuritySettings() {
     const ld = document.getElementById('lockoutDuration');
     const sd = document.getElementById('sessionDuration');
     const ce = document.getElementById('captchaEnabled');
+    const dbg = document.getElementById('debugMode');
     if (ma) { ma.value = d.settings.max_attempts ?? 3; if (mv) mv.textContent = ma.value; }
     if (ld) ld.value = d.settings.lockout_duration ?? 300;
     if (sd) sd.value = d.settings.session_duration ?? 28800;
     if (ce) ce.checked = d.settings.captcha_enabled !== false;
+    if (dbg) dbg.checked = d.settings.debug_mode !== false;
 
     // Branding
     const cn = document.getElementById('companyName');
@@ -2051,6 +2058,7 @@ async function saveSecuritySettings() {
     lockout_duration: parseInt(document.getElementById('lockoutDuration').value),
     session_duration: parseInt(document.getElementById('sessionDuration').value),
     captcha_enabled:  document.getElementById('captchaEnabled').checked,
+    debug_mode:       document.getElementById('debugMode') ? document.getElementById('debugMode').checked : true,
     log_enabled:      true,
   };
 

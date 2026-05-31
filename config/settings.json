@@ -8,5 +8,6 @@
     "lockout_duration": 300,
     "session_duration": 28800,
     "captcha_enabled": true,
-    "log_enabled": true
+    "log_enabled": true,
+    "debug_mode": true
 }

@@ -127,6 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($body['session_duration'])) $current['session_duration'] = max(900, min(86400, (int)$body['session_duration']));
     if (isset($body['captcha_enabled']))  $current['captcha_enabled']  = (bool)$body['captcha_enabled'];
     if (isset($body['log_enabled']))      $current['log_enabled']      = (bool)$body['log_enabled'];
+    if (isset($body['debug_mode']))       $current['debug_mode']       = (bool)$body['debug_mode'];
 
     if (saveSettings($current)) {
         logAuth('settings_updated', ['user' => $_SESSION['auth_user'] ?? '?']);

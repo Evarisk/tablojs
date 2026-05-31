@@ -11,12 +11,15 @@ header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 
 // ─── Authentification ─────────────────────────────────────────────────────
+// Charger auth.php systématiquement pour appliquer la configuration des erreurs PHP
+// et les fonctions de compatibilité globales (polyfills).
+require_once __DIR__ . '/auth.php';
+
 // L'action 'active' est accessible sans session (appelée par JS au démarrage).
 // Toutes les autres actions nécessitent une session valide.
 $publicActions = ['active'];
 $currentAction = $_GET['action'] ?? '';
 if (!in_array($currentAction, $publicActions, true)) {
-    require_once __DIR__ . '/auth.php';
     requireAuth(true); // répond JSON 401 si non authentifié
 }
 // ─────────────────────────────────────────────────────────────────────────

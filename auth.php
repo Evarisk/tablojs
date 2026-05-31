@@ -37,6 +37,22 @@ function saveSettings(array $s): bool {
     );
 }
 
+// Permet d'activer/désactiver globalement les rapports d'erreur PHP via settings.json
+// pour éviter les pages blanches de PHP en mode débogage ou les fuites de chemins en prod.
+(static function() {
+    $settings = loadSettings();
+    $debug = isset($settings['debug_mode']) ? (bool)$settings['debug_mode'] : true;
+    if ($debug) {
+        ini_set('display_errors', '1');
+        ini_set('display_startup_errors', '1');
+        error_reporting(E_ALL);
+    } else {
+        ini_set('display_errors', '0');
+        ini_set('display_startup_errors', '0');
+        error_reporting(0);
+    }
+})();
+
 /* ── Logging ────────────────────────────────────────────────────────── */
 function logAuth(string $event, array $extra = []): void {
     $settings = loadSettings();

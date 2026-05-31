@@ -1,8 +1,35 @@
 <?php
-// Activer l'affichage des erreurs pour le débogage de l'installation
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// Activer l'affichage des erreurs sauf si l'installation est verrouillée ou si la prod est configurée
+(function() {
+    $debug = true;
+    $settingsFile = dirname(__DIR__) . '/config/settings.json';
+    if (file_exists($settingsFile)) {
+        $settings = json_decode(file_get_contents($settingsFile), true);
+        if (isset($settings['debug_mode'])) {
+            $debug = (bool)$settings['debug_mode'];
+        }
+    }
+    // Vérifier si le mode production est activé dans la config
+    $confFile = dirname(__DIR__) . '/conf/conf.php';
+    if (file_exists($confFile)) {
+        $prodMode = (static function($f) {
+            @include $f;
+            return $tablojs_prod_mode ?? 0;
+        })($confFile);
+        if ($prodMode && !isset($settings['debug_mode'])) {
+            $debug = false;
+        }
+    }
+    if ($debug) {
+        ini_set('display_errors', 1);
+        ini_set('display_startup_errors', 1);
+        error_reporting(E_ALL);
+    } else {
+        ini_set('display_errors', 0);
+        ini_set('display_startup_errors', 0);
+        error_reporting(0);
+    }
+})();
 
 // Définir les fonctions de compatibilité PHP 8.0 pour PHP 7.4
 if (!function_exists('str_starts_with')) {
