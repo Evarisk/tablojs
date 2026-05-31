@@ -88,6 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE' && ($_GET['action'] ?? '') === 'logo
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $s = loadSettings();
     $s['_client_ip'] = getClientIp();
+    $s['_install_locked'] = file_exists(__DIR__ . '/../install/install.lock');
     // Ajouter timestamp au logo pour éviter le cache navigateur
     if (!empty($s['company_logo'])) {
         $logoPath = __DIR__ . '/../' . $s['company_logo'];

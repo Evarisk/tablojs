@@ -718,6 +718,10 @@
               <input type="checkbox" id="debugMode" checked
                      style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer">
             </div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:13px">Fichier d'installation verrouillé (install.lock)</span>
+              <span id="installLockStatus" class="pill" style="font-size:11px;font-weight:600;padding:3px 8px">Vérification…</span>
+            </div>
           </div>
         </div>
       </div>
@@ -1995,6 +1999,19 @@ async function loadSecuritySettings() {
     if (sd) sd.value = d.settings.session_duration ?? 28800;
     if (ce) ce.checked = d.settings.captcha_enabled !== false;
     if (dbg) dbg.checked = d.settings.debug_mode !== false;
+
+    const ils = document.getElementById('installLockStatus');
+    if (ils) {
+      if (d.settings._install_locked) {
+        ils.textContent = '✅ Verrouillé';
+        ils.style.background = 'rgba(16,185,129,.15)';
+        ils.style.color = 'var(--green)';
+      } else {
+        ils.textContent = '⚠️ Non verrouillé (Danger)';
+        ils.style.background = 'rgba(239,68,68,.15)';
+        ils.style.color = 'var(--red)';
+      }
+    }
 
     // Branding
     const cn = document.getElementById('companyName');
