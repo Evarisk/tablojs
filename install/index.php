@@ -447,7 +447,7 @@ function executeSqlFile(PDO $pdo, string $path, array &$log, string $label): voi
             $ok++;
         } catch (PDOException $e) {
             $msg = $e->getMessage();
-            if (str_contains($msg, 'already exists') || str_contains($msg, 'Duplicate key name')) {
+            if (strpos($msg, 'already exists') !== false || strpos($msg, 'Duplicate key name') !== false) {
                 $ok++; // Déjà créé = OK lors d'une réinstallation
             } else {
                 $log[] = ['warn', "{$label} : " . htmlspecialchars($msg)];

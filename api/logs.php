@@ -113,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     foreach ($lines as $line) {
         $entry = json_decode($line, true);
         if (!$entry) continue;
-        if ($filter && !str_contains(strtolower($line), strtolower($filter))) continue;
+        if ($filter && strpos(strtolower($line), strtolower($filter)) === false) continue;
         $entries[] = $entry;
         if (count($entries) >= $limit) break;
     }
