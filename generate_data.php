@@ -213,7 +213,7 @@ function _findFile(string $dataDir, string $preferred, string $keyword, array $e
     return null;
 }
 
-function _writeJson(string $dataDir, string $name, mixed $data): void {
+function _writeJson(string $dataDir, string $name, $data): void {
     $path = $dataDir . DIRECTORY_SEPARATOR . $name;
     file_put_contents($path, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
     _log('  OK ' . $name . ' (' . round(filesize($path) / 1024) . ' Ko)');
