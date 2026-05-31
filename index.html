@@ -720,7 +720,8 @@
             </div>
             <div style="display:flex;justify-content:space-between;align-items:center">
               <span style="font-size:13px">Fichier d'installation verrouillé (install.lock)</span>
-              <span id="installLockStatus" class="pill" style="font-size:11px;font-weight:600;padding:3px 8px">Vérification…</span>
+              <span id="installLockStatus" class="pill" onclick="createInstallLock()"
+                    style="font-size:11px;font-weight:600;padding:3px 8px;cursor:pointer" title="Cliquez pour verrouiller l'assistant d'installation">Vérification…</span>
             </div>
           </div>
         </div>
@@ -2092,6 +2093,38 @@ async function saveSecuritySettings() {
     if (d.ok) loadSecurityLogs();
   } catch(e) {
     btn.textContent = '❌ Erreur réseau'; btn.disabled = false;
+  }
+}
+
+async function createInstallLock() {
+  if (_securitySettings && _securitySettings._install_locked) {
+    return;
+  }
+
+  if (!confirm("Voulez-vous verrouiller définitivement l'assistant d'installation en créant le fichier install.lock ?")) {
+    return;
+  }
+
+  try {
+    const r = await fetch('api/settings.php?action=lock_install', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: {
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || ''
+      }
+    });
+    const d = await r.json();
+    if (d.ok) {
+      consoleLog('Fichier install.lock créé avec succès.', 'success');
+      alert("L'assistant d'installation a été verrouillé avec succès !");
+      loadSecuritySettings();
+    } else {
+      consoleLog(`Erreur lors du verrouillage de l'installation : ${d.error}`, 'error');
+      alert(`Erreur : ${d.error}`);
+    }
+  } catch(e) {
+    consoleLog(`Erreur réseau lors de la création de install.lock : ${e.message}`, 'error');
+    alert("Erreur réseau lors de la création du fichier de verrouillage.");
   }
 }
 

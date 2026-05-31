@@ -84,6 +84,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE' && ($_GET['action'] ?? '') === 'logo
     exit;
 }
 
+/* ── LOCK install ────────────────────────────────────────────────── */
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_GET['action'] ?? '') === 'lock_install') {
+    $lockFile = __DIR__ . '/../install/install.lock';
+    if (!file_exists($lockFile)) {
+        $content = date('Y-m-d H:i:s') . " — Verrouillé depuis l'UI d'administration\n";
+        if (file_put_contents($lockFile, $content) === false) {
+            http_response_code(500);
+            echo json_encode(['ok' => false, 'error' => 'Impossible de créer le fichier install.lock']);
+            exit;
+        }
+    }
+    echo json_encode(['ok' => true]);
+    exit;
+}
+
 /* ── GET settings ────────────────────────────────────────────────── */
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $s = loadSettings();
